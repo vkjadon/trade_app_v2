@@ -370,4 +370,31 @@ class CandlestickChart:
                         ),
                     )
                 )
+                
+                # --------------------------------------------------
+                # Summary
+                # --------------------------------------------------
+
+                ce_signals = (df["Signal"] == "BUY CE").sum()
+                pe_signals = (df["Signal"] == "BUY PE").sum()
+
+                signal_count = ce_signals + pe_signals
+                trade_count = len(trades) if trades is not None else 0
+
+                fig.add_annotation(
+                    xref="paper",
+                    yref="paper",
+                    x=0.99,
+                    y=0.99,
+                    showarrow=False,
+                    align="right",
+                    bgcolor="white",
+                    bordercolor="black",
+                    borderwidth=1,
+                    font=dict(size=12),
+                    text=(
+                        f"<b>Signals:</b> {signal_count}<br>"
+                        f"<b>Trades:</b> {trade_count}"
+                    ),
+                )
         return fig

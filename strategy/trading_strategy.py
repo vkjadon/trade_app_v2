@@ -12,37 +12,30 @@ class TradingStrategy:
 
         df = df.copy()
 
-        # Output Columns
         df["Signal"] = "WAIT"
         df["Reason"] = ""
 
-        # Process candles
         for i in range(1, len(df)):
 
             current = df.iloc[i]
             previous = df.iloc[i - 1]
-            
-            signal = "WAIT"
-            reasons = []
 
-            # ----------------------------------
-            # Time Filter (only check for now)
-            # ----------------------------------
+            signal = "WAIT"
 
             current_time = current.name.time()
 
+            # ----------------------------------
+            # Time Filter
+            # ----------------------------------
+
             if current_time < time(9, 30):
-                df.at[df.index[i], "Signal"] = signal
                 continue
 
             if current_time >= time(15, 15):
-                df.at[df.index[i], "Signal"] = signal
                 continue
 
-            
-
             # ----------------------------------
-            # CALL Trend
+            # Trend
             # ----------------------------------
 
             ce_trend = (
@@ -50,25 +43,29 @@ class TradingStrategy:
                 and current["EMA20"] > previous["EMA20"]
             )
 
-            # ----------------------------------
-            # PUT Trend
-            # ----------------------------------
-
             pe_trend = (
                 current["Close"] < current["EMA20"]
                 and current["EMA20"] < previous["EMA20"]
             )
-            
+
+            # ----------------------------------
+            # RSI
+            # ----------------------------------
+
             ce_momentum = current["RSI"] > 55
             pe_momentum = current["RSI"] < 45
+
+            # ----------------------------------
+            # MACD
+            # ----------------------------------
 
             ce_macd = current["MACD"] > current["MACDSignal"]
             pe_macd = current["MACD"] < current["MACDSignal"]
 
+            # ----------------------------------
+            # Breakout
+            # ----------------------------------
 
-            # ce_breakout = current["Close"] > current["ORB_High"]
-            # pe_breakout = current["Low"] < current["ORB_Low"]
-            
             ORB_THRESHOLD = 60
 
             orb_range = current["ORB_High"] - current["ORB_Low"]
@@ -80,48 +77,84 @@ class TradingStrategy:
                 ce_breakout = current["High"] > previous["High"]
                 pe_breakout = current["Low"] < previous["Low"]
 
+            # ----------------------------------
+            # Candle
+            # ----------------------------------
+
             body = abs(current["Close"] - current["Open"])
             range_ = current["High"] - current["Low"]
 
             strong_body = range_ > 0 and body / range_ >= 0.6
 
-            ce_candle = (current["Close"] > current["Open"] and strong_body)
-            pe_candle = (current["Close"] < current["Open"] and strong_body)
-            
-            if ce_trend and ce_momentum and ce_macd and ce_breakout and ce_candle:
+            ce_candle = current["Close"] > current["Open"] and strong_body
+            pe_candle = current["Close"] < current["Open"] and strong_body
+
+            # ----------------------------------
+            # BUY Signals
+            # ----------------------------------
+
+            if (
+                ce_trend
+                and ce_momentum
+                and ce_macd
+                and ce_breakout
+                and ce_candle
+            ):
+
                 signal = "BUY CE"
-                reasons.append("Price > EMA20")
-                reasons.append("EMA20 Rising")
-                reasons.append("RSI > 55")
-                reasons.append("MACD Bullish")
-                reasons.append("Previous High Breakout")
-                reasons.append("Strong Bull Candle")
+                reasons = ["All Conditions Satisfied"]
 
-            elif pe_trend and pe_momentum and pe_macd and pe_breakout and pe_candle:
+            elif (
+                pe_trend
+                and pe_momentum
+                and pe_macd
+                and pe_breakout
+                and pe_candle
+            ):
+
                 signal = "BUY PE"
-                reasons.append("Price < EMA20")
-                reasons.append("EMA20 Falling")
-                reasons.append("RSI < 45")
-                reasons.append("MACD Bearish")
-                reasons.append("Previous Low Breakout")
-                reasons.append("Strong Bear Candle")
+                reasons = ["All Conditions Satisfied"]
 
-            # ----------------------------------
-            # Remove Duplicate Signals
-            # ----------------------------------
+            else:
 
-            if signal == self.last_signal:
-                signal = "WAIT"
                 reasons = []
 
+                if not (ce_trend or pe_trend):
+                    reasons.append("❌ Trend")
+
+                if not (ce_momentum or pe_momentum):
+                    reasons.append("❌ RSI")
+
+                if not (ce_macd or pe_macd):
+                    reasons.append("❌ MACD")
+
+                if not (ce_breakout or pe_breakout):
+                    reasons.append("❌ Breakout")
+
+                if not (ce_candle or pe_candle):
+                    reasons.append("❌ Strong Candle")
+
+            # ----------------------------------
+            # Duplicate Signal
+            # ----------------------------------
+
+            if signal in ["BUY CE", "BUY PE"]:
+
+                if signal == self.last_signal:
+                    reasons = ["Duplicate Signal"]
+
+                else:
+                    self.last_signal = signal
+        
+        
             if signal in ["BUY CE", "BUY PE"]:
                 self.last_signal = signal
-                        
+
             # ----------------------------------
             # Store
             # ----------------------------------
 
             df.at[df.index[i], "Signal"] = signal
             df.at[df.index[i], "Reason"] = "\n".join(reasons)
-            
+
         return df

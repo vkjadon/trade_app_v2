@@ -1,15 +1,19 @@
 import streamlit as st
 
 from widgets.sidebar import Sidebar
-
-from core.application import TradingApplication
+from widgets.replay_panel import ReplayPanel
+from widgets.signal_table import SignalTable
+from widgets.trade_book import TradeBook
 
 from charts.candlestick import CandlestickChart
 from charts.rsi_chart import RSIChart
 from charts.macd_chart import MACDChart
 from charts.charts_panel import ChartsPanel
 
-from widgets.trade_book import TradeBook
+from core.application import TradingApplication
+from strategy.trading_strategy import TradingStrategy
+from engine.trade_engine import TradeEngine
+
 
 # --------------------------------------------------------
 # Page
@@ -22,72 +26,91 @@ st.set_page_config(
 
 st.title("📈 Trade App V2")
 
+
+# --------------------------------------------------------
+# Sidebar
+# --------------------------------------------------------
+
 sidebar = Sidebar()
-
 config = sidebar.render()
-
-symbol = config["symbol"]
-
-interval = config["interval"]
-
-trading_date = config["trading_date"]
-
-lookback_days = config["lookback_days"]
 
 settings = config["settings"]
 
+
 # --------------------------------------------------------
-# Load
+# Load Data
 # --------------------------------------------------------
 
 app = TradingApplication()
 
-with st.spinner("Loading Market Data..."):
-
-    result = app.run(config)
+result = app.run(config)
 
 df = result["data"]
 
-trades = result["trades"]
+
+# --------------------------------------------------------
+# Replay
+# --------------------------------------------------------
+
+step = ReplayPanel().render(len(df))
+
+df = df.iloc[:step].copy()
+
+
+# --------------------------------------------------------
+# Strategy
+# --------------------------------------------------------
+
+strategy = TradingStrategy()
+
+df = strategy.generate_signals(
+    df,
+    settings,
+)
+
+
+# --------------------------------------------------------
+# Trades
+# --------------------------------------------------------
+
+trade_engine = TradeEngine()
+
+trades = trade_engine.generate(df)
+
 
 # --------------------------------------------------------
 # Charts
 # --------------------------------------------------------
 
-price_chart = CandlestickChart().create(df, trades)
-
-# --------------------------------------------------------
-# Trade Book
-# --------------------------------------------------------
-
+price_chart = CandlestickChart().create(
+    df,
+    trades,
+)
 
 rsi_chart = None
 macd_chart = None
 
 if settings["rsi"]:
-
     rsi_chart = RSIChart().create(df)
 
 if settings["macd"]:
-
     macd_chart = MACDChart().create(df)
 
-ChartsPanel().render(price_chart,)
-TradeBook().render(trades)
+ChartsPanel().render(price_chart)
+ChartsPanel().render(rsi_chart, macd_chart)
 
-ChartsPanel().render(rsi_chart, macd_chart,)
 
 # --------------------------------------------------------
-# Signals
+# Trade Book
+# --------------------------------------------------------
+
+TradeBook().render(trades)
+
+
+# --------------------------------------------------------
+# Signal Table
 # --------------------------------------------------------
 
 st.subheader("Signals")
 
-# signals = df[df["Signal"] != "WAIT"]
-
-st.dataframe(
-    df[["Close", "Signal", "Reason"]],
-    use_container_width=True,
-)
-
-st.dataframe(df[["ORB_High", "ORB_Low"]].head(20))
+SignalTable().render(df)

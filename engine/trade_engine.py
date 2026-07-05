@@ -1,4 +1,5 @@
 import pandas as pd
+from datetime import time
 
 
 class TradeEngine:
@@ -7,76 +8,115 @@ class TradeEngine:
 
         trades = []
 
-        current_trade = None
+        trade = None
 
-        for index, candle in df.iterrows():
+        for i in range(1, len(df)):
 
-            signal = candle["Signal"]
+            candle = df.iloc[i]
+            previous = df.iloc[i - 1]
+            current_time = candle.name.time()
 
-            # ----------------------------
-            # Open Trade
-            # ----------------------------
+            # --------------------------------------------------
+            # 1. Exit Existing Trade
+            # --------------------------------------------------
 
-            if current_trade is None:
+            if trade is not None:
 
-                if signal in ["BUY CE", "BUY PE"]:
+                exit_trade = False
 
-                    current_trade = {
-                        "Signal": signal,
-                        "Entry Time": index,
-                        "Entry": candle["Close"],
-                        "Reason": candle["Reason"],
-                    }
+                if trade["Signal"] == "BUY CE":
 
-                continue
+                    if candle["Low"] <= trade["SL"]:
+                        exit_price = trade["SL"]
+                        exit_reason = "SL"
+                        exit_trade = True
 
-            # ----------------------------
-            # Reverse Trade
-            # ----------------------------
+                    elif candle["High"] >= trade["Target"]:
+                        exit_price = trade["Target"]
+                        exit_reason = "TARGET"
+                        exit_trade = True
 
-            if signal != current_trade["Signal"] and signal in ["BUY CE", "BUY PE"]:
-
-                current_trade["Exit Time"] = index
-                current_trade["Exit"] = candle["Close"]
-
-                if current_trade["Signal"] == "BUY CE":
-                    current_trade["Points"] = (
-                        current_trade["Exit"] - current_trade["Entry"]
-                    )
                 else:
-                    current_trade["Points"] = (
-                        current_trade["Entry"] - current_trade["Exit"]
-                    )
 
-                trades.append(current_trade)
+                    if candle["High"] >= trade["SL"]:
+                        exit_price = trade["SL"]
+                        exit_reason = "SL"
+                        exit_trade = True
 
-                current_trade = {
-                    "Signal": signal,
-                    "Entry Time": index,
-                    "Entry": candle["Close"],
+                    elif candle["Low"] <= trade["Target"]:
+                        exit_price = trade["Target"]
+                        exit_reason = "TARGET"
+                        exit_trade = True
+
+                if not exit_trade and current_time >= time(15, 15):
+                    exit_price = candle["Close"]
+                    exit_reason = "EOD"
+                    exit_trade = True
+
+                if exit_trade:
+
+                    trade["Exit Time"] = candle.name
+                    trade["Exit"] = round(exit_price, 2)
+                    trade["Exit Reason"] = exit_reason
+
+                    if trade["Signal"] == "BUY CE":
+                        trade["Points"] = round(exit_price - trade["Entry"], 2)
+                    else:
+                        trade["Points"] = round(trade["Entry"] - exit_price, 2)
+
+                    trades.append(trade)
+                    trade = None
+
+            # --------------------------------------------------
+            # 2. Open New Trade (same candle allowed)
+            # --------------------------------------------------
+
+            if trade is None and candle["Signal"] in ["BUY CE", "BUY PE"]:
+
+                entry = candle["Close"]
+
+                if candle["Signal"] == "BUY CE":
+
+                    sl = previous["Low"] - 2
+                    risk = entry - sl
+                    target = entry + (2 * risk)
+
+                else:
+
+                    sl = previous["High"] + 2
+                    risk = sl - entry
+                    target = entry - (2 * risk)
+
+                trade = {
+                    "Signal": candle["Signal"],
+                    "Entry Time": candle.name,
+                    "Entry": round(entry, 2),
+                    "SL": round(sl, 2),
+                    "Target": round(target, 2),
                     "Reason": candle["Reason"],
                 }
+        
+        # --------------------------------------------------
+# Close Last Open Trade
+# --------------------------------------------------
 
-        # ----------------------------
-        # Close Last Trade
-        # ----------------------------
-
-        if current_trade is not None:
+        if trade is not None:
 
             last = df.iloc[-1]
 
-            current_trade["Exit Time"] = last.name
-            current_trade["Exit"] = last["Close"]
+            trade["Exit Time"] = last.name
+            trade["Exit"] = round(last["Close"], 2)
+            trade["Exit Reason"] = "EOD"
 
-            if current_trade["Signal"] == "BUY CE":
-                current_trade["Points"] = (
-                    current_trade["Exit"] - current_trade["Entry"]
+            if trade["Signal"] == "BUY CE":
+                trade["Points"] = round(
+                    trade["Exit"] - trade["Entry"], 2
                 )
             else:
-                current_trade["Points"] = (
-                    current_trade["Entry"] - current_trade["Exit"]
+                trade["Points"] = round(
+                    trade["Entry"] - trade["Exit"], 2
                 )
 
-            trades.append(current_trade)
-
+            trades.append(trade)
+    
         return pd.DataFrame(trades)
