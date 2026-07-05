@@ -1,0 +1,141 @@
+.
+├── README.md
+├── app.py
+├── assets
+│   ├── icons
+│   └── images
+├── auth
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-313.pyc
+│   │   └── kite_session.cpython-313.pyc
+│   ├── kite_session.py
+│   └── login.py
+├── cache
+│   └── instruments.csv
+├── charts
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-313.pyc
+│   │   ├── candlestick.cpython-313.pyc
+│   │   ├── charts_panel.cpython-313.pyc
+│   │   ├── macd_chart.cpython-313.pyc
+│   │   └── rsi_chart.cpython-313.pyc
+│   ├── candlestick.py
+│   ├── charts_panel.py
+│   ├── macd_chart.py
+│   ├── oi_chart.py
+│   ├── overlays.py
+│   ├── rsi_chart.py
+│   └── volume_chart.py
+├── config
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-313.pyc
+│   │   ├── market.cpython-313.pyc
+│   │   ├── settings.cpython-313.pyc
+│   │   ├── strategy.cpython-313.pyc
+│   │   └── symbols.cpython-313.pyc
+│   ├── chart.py
+│   ├── market.py
+│   ├── settings.py
+│   ├── strategy.py
+│   └── symbols.py
+├── data
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-313.pyc
+│   │   ├── instrument_manager.cpython-313.pyc
+│   │   ├── kite_client.cpython-313.pyc
+│   │   ├── market_data.cpython-313.pyc
+│   │   └── market_data_service.cpython-313.pyc
+│   ├── greeks.py
+│   ├── instrument_manager.py
+│   ├── kite_client.py
+│   ├── market_data.py
+│   ├── market_data_service.py
+│   ├── oi.py
+│   ├── option_chain.py
+│   ├── pcr.py
+│   └── volume.py
+├── indicators
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-313.pyc
+│   │   ├── atr.cpython-313.pyc
+│   │   ├── ema.cpython-313.pyc
+│   │   ├── indicator_manager.cpython-313.pyc
+│   │   ├── macd.cpython-313.pyc
+│   │   ├── rsi.cpython-313.pyc
+│   │   ├── volume.cpython-313.pyc
+│   │   └── vwap.cpython-313.pyc
+│   ├── atr.py
+│   ├── ema.py
+│   ├── indicator_manager.py
+│   ├── macd.py
+│   ├── rsi.py
+│   ├── volume.py
+│   └── vwap.py
+├── logs
+├── main.py
+├── models
+│   ├── __init__.py
+│   ├── position.py
+│   ├── signal.py
+│   └── trade.py
+├── pyproject.toml
+├── request_token.py
+├── strategy
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-313.pyc
+│   │   ├── rules.cpython-313.pyc
+│   │   └── strategy_manager.cpython-313.pyc
+│   ├── candle_rule.py
+│   ├── ema_rule.py
+│   ├── greeks_rule.py
+│   ├── macd_rule.py
+│   ├── oi_rule.py
+│   ├── pcr_rule.py
+│   ├── rsi_rule.py
+│   ├── rule_engine.py
+│   ├── rules.py
+│   ├── strategy_manager.py
+│   ├── volume_rule.py
+│   └── vwap_rule.py
+├── styles
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-313.pyc
+│   │   └── theme.cpython-313.pyc
+│   └── theme.py
+├── test_connection.py
+├── test_indicator.py
+├── test_instruments.py
+├── test_manager.py
+├── test_market_data.py
+├── test_service.py
+├── tests
+│   ├── test_data.py
+│   ├── test_indicators.py
+│   └── test_strategy.py
+├── tree.txt
+├── utils
+│   ├── __init__.py
+│   ├── constants.py
+│   └── helpers.py
+├── uv.lock
+└── widgets
+    ├── __init__.py
+    ├── __pycache__
+    │   ├── __init__.cpython-313.pyc
+    │   └── sidebar.cpython-313.pyc
+    ├── charts_panel.py
+    ├── market_snapshot.py
+    ├── market_status.py
+    ├── option_chain.py
+    ├── sidebar.py
+    ├── statistics.py
+    └── trade_book.py
+
+25 directories, 114 files
