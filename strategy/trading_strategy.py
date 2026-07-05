@@ -8,6 +8,8 @@ class TradingStrategy:
 
     def generate_signals(self, df, settings):
 
+        self.last_signal = "WAIT"
+
         df = df.copy()
 
         # Output Columns
@@ -63,8 +65,20 @@ class TradingStrategy:
             ce_macd = current["MACD"] > current["MACDSignal"]
             pe_macd = current["MACD"] < current["MACDSignal"]
 
-            ce_breakout = current["High"] > previous["High"]
-            pe_breakout = current["Low"] < previous["Low"]
+
+            # ce_breakout = current["Close"] > current["ORB_High"]
+            # pe_breakout = current["Low"] < current["ORB_Low"]
+            
+            ORB_THRESHOLD = 60
+
+            orb_range = current["ORB_High"] - current["ORB_Low"]
+
+            if orb_range <= ORB_THRESHOLD:
+                ce_breakout = current["Close"] > current["ORB_High"]
+                pe_breakout = current["Close"] < current["ORB_Low"]
+            else:
+                ce_breakout = current["High"] > previous["High"]
+                pe_breakout = current["Low"] < previous["Low"]
 
             body = abs(current["Close"] - current["Open"])
             range_ = current["High"] - current["Low"]
@@ -92,8 +106,17 @@ class TradingStrategy:
                 reasons.append("Previous Low Breakout")
                 reasons.append("Strong Bear Candle")
 
-            
-            
+            # ----------------------------------
+            # Remove Duplicate Signals
+            # ----------------------------------
+
+            if signal == self.last_signal:
+                signal = "WAIT"
+                reasons = []
+
+            if signal in ["BUY CE", "BUY PE"]:
+                self.last_signal = signal
+                        
             # ----------------------------------
             # Store
             # ----------------------------------

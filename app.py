@@ -54,7 +54,12 @@ trades = result["trades"]
 # Charts
 # --------------------------------------------------------
 
-price_chart = CandlestickChart().create(df)
+price_chart = CandlestickChart().create(df, trades)
+
+# --------------------------------------------------------
+# Trade Book
+# --------------------------------------------------------
+
 
 rsi_chart = None
 macd_chart = None
@@ -67,13 +72,10 @@ if settings["macd"]:
 
     macd_chart = MACDChart().create(df)
 
-ChartsPanel().render(price_chart, rsi_chart, macd_chart,)
-
-# --------------------------------------------------------
-# Trade Book
-# --------------------------------------------------------
-
+ChartsPanel().render(price_chart,)
 TradeBook().render(trades)
+
+ChartsPanel().render(rsi_chart, macd_chart,)
 
 # --------------------------------------------------------
 # Signals
@@ -87,3 +89,5 @@ st.dataframe(
     df[["Close", "Signal", "Reason"]],
     use_container_width=True,
 )
+
+st.dataframe(df[["ORB_High", "ORB_Low"]].head(20))

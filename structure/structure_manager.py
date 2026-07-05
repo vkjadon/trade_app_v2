@@ -24,5 +24,16 @@ class StructureManager:
         for calculator in self.calculators:
 
             df = calculator.calculate(df)
+        # ----------------------------------
+        # Opening Range (09:15 - 09:30)
+        # ----------------------------------
 
+        orb = df.between_time("09:15", "09:30")
+
+        orb_high = orb["High"].max()
+        orb_low = orb["Low"].min()
+
+        df["ORB_High"] = orb_high
+        df["ORB_Low"] = orb_low
+        
         return df
