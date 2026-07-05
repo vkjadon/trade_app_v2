@@ -29,4 +29,12 @@ def calculate(df):
         df["MACDs_12_26_9"]
     )
 
+    # Standard column names used by strategy
+
+    df["MACD"] = df["MACD_12_26_9"]
+
+    df["MACDSignal"] = df["MACDs_12_26_9"]
+
+    df["MACDHistogram"] = df["MACDh_12_26_9"]
+    
     return df

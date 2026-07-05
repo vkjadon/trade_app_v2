@@ -1,4 +1,3 @@
-import pandas as pd
 import streamlit as st
 
 
@@ -8,58 +7,25 @@ class TradeBook:
 
         st.subheader("📒 Trade Book")
 
-        if not trades:
-
+        if trades.empty:
             st.info("No trades generated.")
-
             return
 
-        rows = []
+        trades = trades.copy()
 
-        running_pl = 0.0
+        trades["Entry Time"] = trades["Entry Time"].dt.strftime("%H:%M")
+        trades["Exit Time"] = trades["Exit Time"].dt.strftime("%H:%M")
 
-        for trade in trades:
+        trades["Entry"] = trades["Entry"].round(2)
+        trades["Exit"] = trades["Exit"].round(2)
+        trades["Points"] = trades["Points"].round(2)
 
-            running_pl += trade.points
+        trades["Running P/L"] = trades["Points"].cumsum().round(2)
 
-            rows.append({
-
-                "Signal": trade.signal,
-
-                "Entry Time": trade.entry_time.strftime("%H:%M"),
-
-                "Exit Time": trade.exit_time.strftime("%H:%M"),
-
-                "Entry": round(trade.entry_price, 2),
-
-                "Exit": round(trade.exit_price, 2),
-
-                "Points": round(trade.points, 2),
-
-                "Running P/L": round(running_pl, 2),
-
-                "Score": trade.score,
-
-                "Confidence": trade.confidence,
-
-                "Status": trade.status,
-
-                "Exit Reason": trade.exit_reason,
-
-                "Reason": "\n".join(trade.reason),
-
-            })
-
-        df = pd.DataFrame(rows)
+        trades = trades.reset_index(drop=True)
 
         st.dataframe(
-
-            df,
-
+            trades,
             use_container_width=True,
-
             hide_index=True,
-
-            height=500,
-
         )

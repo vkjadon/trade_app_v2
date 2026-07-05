@@ -1,192 +1,82 @@
-from models.trade import Trade
+import pandas as pd
 
 
 class TradeEngine:
-
-    def __init__(self):
-
-        self.position = "FLAT"
-
-        self.current_trade = None
-
-        self.cooldown = 0
 
     def generate(self, df):
 
         trades = []
 
-        self.position = "FLAT"
-        self.current_trade = None
-        self.cooldown = 0
+        current_trade = None
 
-        for _, candle in df.iterrows():
-
-            # ------------------------------------
-            # Cooldown
-            # ------------------------------------
-
-            if self.cooldown > 0:
-
-                self.cooldown -= 1
-
-                continue
+        for index, candle in df.iterrows():
 
             signal = candle["Signal"]
 
-            # ====================================
-            # FLAT
-            # ====================================
+            # ----------------------------
+            # Open Trade
+            # ----------------------------
 
-            if self.position == "FLAT":
+            if current_trade is None:
 
-                if signal == "BUY CE":
+                if signal in ["BUY CE", "BUY PE"]:
 
-                    self.current_trade = Trade(
+                    current_trade = {
+                        "Signal": signal,
+                        "Entry Time": index,
+                        "Entry": candle["Close"],
+                        "Reason": candle["Reason"],
+                    }
 
-                        direction="LONG",
+                continue
 
-                        entry_time=candle.name,
+            # ----------------------------
+            # Reverse Trade
+            # ----------------------------
 
-                        entry_price=candle["Close"],
+            if signal != current_trade["Signal"] and signal in ["BUY CE", "BUY PE"]:
 
-                        confidence=candle["Confidence"],
+                current_trade["Exit Time"] = index
+                current_trade["Exit"] = candle["Close"]
 
-                        reason=candle["Reason"],
-
+                if current_trade["Signal"] == "BUY CE":
+                    current_trade["Points"] = (
+                        current_trade["Exit"] - current_trade["Entry"]
+                    )
+                else:
+                    current_trade["Points"] = (
+                        current_trade["Entry"] - current_trade["Exit"]
                     )
 
-                    self.position = "LONG"
+                trades.append(current_trade)
 
-                elif signal == "BUY PE":
+                current_trade = {
+                    "Signal": signal,
+                    "Entry Time": index,
+                    "Entry": candle["Close"],
+                    "Reason": candle["Reason"],
+                }
 
-                    self.current_trade = Trade(
+        # ----------------------------
+        # Close Last Trade
+        # ----------------------------
 
-                        direction="SHORT",
-
-                        entry_time=candle.name,
-
-                        entry_price=candle["Close"],
-
-                        confidence=candle["Confidence"],
-
-                        reason=candle["Reason"],
-
-                    )
-
-                    self.position = "SHORT"
-
-            # ====================================
-            # LONG
-            # ====================================
-
-            elif self.position == "LONG":
-
-                if signal == "BUY PE":
-
-                    self.current_trade.exit_time = candle.name
-
-                    self.current_trade.exit_price = candle["Close"]
-
-                    self.current_trade.points = (
-
-                        self.current_trade.exit_price
-                        -
-                        self.current_trade.entry_price
-
-                    )
-
-                    trades.append(self.current_trade)
-
-                    self.position = "SHORT"
-
-                    self.current_trade = Trade(
-
-                        direction="SHORT",
-
-                        entry_time=candle.name,
-
-                        entry_price=candle["Close"],
-
-                        confidence=candle["Confidence"],
-
-                        reason=candle["Reason"],
-
-                    )
-
-                    self.cooldown = 2
-
-            # ====================================
-            # SHORT
-            # ====================================
-
-            elif self.position == "SHORT":
-
-                if signal == "BUY CE":
-
-                    self.current_trade.exit_time = candle.name
-
-                    self.current_trade.exit_price = candle["Close"]
-
-                    self.current_trade.points = (
-
-                        self.current_trade.entry_price
-                        -
-                        self.current_trade.exit_price
-
-                    )
-
-                    trades.append(self.current_trade)
-
-                    self.position = "LONG"
-
-                    self.current_trade = Trade(
-
-                        direction="LONG",
-
-                        entry_time=candle.name,
-
-                        entry_price=candle["Close"],
-
-                        confidence=candle["Confidence"],
-
-                        reason=candle["Reason"],
-
-                    )
-
-                    self.cooldown = 2
-
-        # ------------------------------------
-        # Close Last Position
-        # ------------------------------------
-
-        if self.current_trade is not None:
+        if current_trade is not None:
 
             last = df.iloc[-1]
 
-            self.current_trade.exit_time = last.name
+            current_trade["Exit Time"] = last.name
+            current_trade["Exit"] = last["Close"]
 
-            self.current_trade.exit_price = last["Close"]
-
-            if self.current_trade.direction == "LONG":
-
-                self.current_trade.points = (
-
-                    self.current_trade.exit_price
-                    -
-                    self.current_trade.entry_price
-
+            if current_trade["Signal"] == "BUY CE":
+                current_trade["Points"] = (
+                    current_trade["Exit"] - current_trade["Entry"]
                 )
-
             else:
-
-                self.current_trade.points = (
-
-                    self.current_trade.entry_price
-                    -
-                    self.current_trade.exit_price
-
+                current_trade["Points"] = (
+                    current_trade["Entry"] - current_trade["Exit"]
                 )
 
-            trades.append(self.current_trade)
+            trades.append(current_trade)
 
-        return trades
+        return pd.DataFrame(trades)

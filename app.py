@@ -87,11 +87,3 @@ st.dataframe(
     df[["Close", "Signal", "Reason"]],
     use_container_width=True,
 )
-
-# if len(signals):
-
-#     st.dataframe(signals[["Close", "Signal", "Score", "Confidence", "Reason",]], use_container_width=True,)
-
-# else:
-
-#     st.info("No signal generated.")

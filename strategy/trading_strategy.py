@@ -60,18 +60,40 @@ class TradingStrategy:
             ce_momentum = current["RSI"] > 55
             pe_momentum = current["RSI"] < 45
 
-            if ce_trend and ce_momentum:
-                signal = "CE Trend"
+            ce_macd = current["MACD"] > current["MACDSignal"]
+            pe_macd = current["MACD"] < current["MACDSignal"]
+
+            ce_breakout = current["High"] > previous["High"]
+            pe_breakout = current["Low"] < previous["Low"]
+
+            body = abs(current["Close"] - current["Open"])
+            range_ = current["High"] - current["Low"]
+
+            strong_body = range_ > 0 and body / range_ >= 0.6
+
+            ce_candle = (current["Close"] > current["Open"] and strong_body)
+            pe_candle = (current["Close"] < current["Open"] and strong_body)
+            
+            if ce_trend and ce_momentum and ce_macd and ce_breakout and ce_candle:
+                signal = "BUY CE"
                 reasons.append("Price > EMA20")
                 reasons.append("EMA20 Rising")
                 reasons.append("RSI > 55")
+                reasons.append("MACD Bullish")
+                reasons.append("Previous High Breakout")
+                reasons.append("Strong Bull Candle")
 
-            elif pe_trend and pe_momentum:
-                signal = "PE Trend"
+            elif pe_trend and pe_momentum and pe_macd and pe_breakout and pe_candle:
+                signal = "BUY PE"
                 reasons.append("Price < EMA20")
                 reasons.append("EMA20 Falling")
                 reasons.append("RSI < 45")
-        
+                reasons.append("MACD Bearish")
+                reasons.append("Previous Low Breakout")
+                reasons.append("Strong Bear Candle")
+
+            
+            
             # ----------------------------------
             # Store
             # ----------------------------------
