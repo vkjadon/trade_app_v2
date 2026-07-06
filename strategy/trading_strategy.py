@@ -227,6 +227,24 @@ class TradingStrategy:
             pe_macd = current["MACD"] < current["MACDSignal"]
 
             # ----------------------------------
+            # Volume
+            # ----------------------------------
+
+            ce_volume_ok = (current["CE_Volume"] > current["CE_Volume_SMA20"])
+
+            pe_volume_ok = (current["PE_Volume"] > current["PE_Volume_SMA20"])
+
+            # ----------------------------------
+            # VWAP
+            # ----------------------------------
+
+            # ce_vwap = current["Close"] > current["VWAP"]
+            # pe_vwap = current["Close"] < current["VWAP"]
+            
+            ce_vwap_ok = (current["CE_Close"] > current["CE_VWAP"])
+            pe_vwap_ok = (current["PE_Close"] > current["PE_VWAP"])
+
+            # ----------------------------------
             # Breakout
             # ----------------------------------
 
@@ -263,6 +281,8 @@ class TradingStrategy:
                 and ce_macd
                 and ce_breakout
                 and ce_candle
+                # and ce_volume_ok
+                and ce_vwap_ok
             ):
 
                 signal = "BUY CE"
@@ -274,6 +294,8 @@ class TradingStrategy:
                 and pe_macd
                 and pe_breakout
                 and pe_candle
+                # and pe_volume_ok
+                and pe_vwap_ok
             ):
 
                 signal = "BUY PE"
@@ -297,7 +319,13 @@ class TradingStrategy:
 
                 if not (ce_candle or pe_candle):
                     reasons.append("❌ Strong Candle")
-
+ 
+                # if not (ce_volume_ok or pe_volume_ok):
+                #     reasons.append("❌ Volume")
+    
+                if not (ce_vwap_ok or pe_vwap_ok):
+                    reasons.append("❌ VWAP")
+    
             # ----------------------------------
             # Duplicate Signal
             # ----------------------------------

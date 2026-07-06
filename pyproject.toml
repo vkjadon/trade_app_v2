@@ -16,3 +16,8 @@ dependencies = [
     "streamlit>=1.46.1",
     "yfinance>=0.2.65",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]

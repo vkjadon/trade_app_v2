@@ -288,3 +288,61 @@ class InstrumentManager:
         row = self.get_spot_instrument(index_name)
 
         return f'{row["exchange"]}:{row["tradingsymbol"]}'
+    
+    # --------------------------------------------------
+    # Current Weekly Expiry
+    # --------------------------------------------------
+
+    def get_current_weekly_expiry(self, index_name):
+
+        expiries = self.get_expiries(index_name)
+
+        return expiries[0]
+
+    # --------------------------------------------------
+    # ATM Option
+    # --------------------------------------------------
+
+    def get_atm_option(
+        self,
+        index_name,
+        spot_price,
+        option_type,
+    ):
+
+        expiry = self.get_current_weekly_expiry(index_name)
+
+        strike = round(spot_price / 50) * 50
+
+        df = self.load()
+
+        row = df[
+            (df["name"] == index_name)
+            &
+            (df["segment"] == "NFO-OPT")
+            &
+            (df["expiry"] == expiry)
+            &
+            (df["strike"] == strike)
+            &
+            (df["instrument_type"] == option_type)
+        ]
+
+        if row.empty:
+            return None
+
+        return row.iloc[0]
+
+
+if __name__ == "__main__":
+
+    im = InstrumentManager()
+
+    option = im.get_atm_option(
+        "NIFTY",
+        25243,
+        "CE",
+    )
+
+    print(option["tradingsymbol"])
+    print(option["instrument_token"])

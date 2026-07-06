@@ -20,19 +20,14 @@ class MarketDataService:
     ):
 
         return self.market.get_spot_data(
-
             index_name=symbol,
-
             interval=interval,
-
             trading_date=trading_date,
-
             lookback_days=lookback_days,
-
         )
 
     # --------------------------------------------------
-    # Option Data
+    # Option Data (Trading Symbol)
     # --------------------------------------------------
 
     def get_option_data(
@@ -44,15 +39,29 @@ class MarketDataService:
     ):
 
         return self.market.get_option_data(
-
             tradingsymbol=tradingsymbol,
-
             interval=interval,
-
             trading_date=trading_date,
-
             lookback_days=lookback_days,
+        )
 
+    # --------------------------------------------------
+    # Option Data (Instrument Token)
+    # --------------------------------------------------
+
+    def get_option_data_by_token(
+        self,
+        instrument_token,
+        interval="5minute",
+        trading_date=None,
+        lookback_days=10,
+    ):
+
+        return self.market.get_history_by_token(
+            instrument_token=instrument_token,
+            interval=interval,
+            trading_date=trading_date,
+            lookback_days=lookback_days,
         )
 
     # --------------------------------------------------

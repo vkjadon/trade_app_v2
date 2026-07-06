@@ -3,6 +3,7 @@ import streamlit as st
 from widgets.sidebar import Sidebar
 from widgets.strategy_widget import StrategyWidget
 from widgets.market_widget import MarketWidget
+from widgets.option_data_widget import OptionDataWidget
 
 from widgets.replay_panel import ReplayPanel
 from widgets.signal_table import SignalTable
@@ -29,7 +30,6 @@ st.set_page_config(
 )
 
 st.title("📈 Trade App V2")
-
 
 # --------------------------------------------------------
 # Sidebar
@@ -59,6 +59,15 @@ df = result["data"]
 # Backtest
 # --------------------------------------------------------
 
+if settings["strategy"] == "Smart ORB":
+
+    OptionDataWidget().render(
+        result["ce"],
+        result["pe"],
+        result["ce_df"],
+        result["pe_df"],
+    )
+    
 if backtest:
 
     st.subheader("📊 Backtest")

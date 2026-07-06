@@ -189,77 +189,77 @@ class CandlestickChart:
 
             )
 
-        # # --------------------------------------------------
-        # # Swing High
-        # # --------------------------------------------------
+        # --------------------------------------------------
+        # Swing High
+        # --------------------------------------------------
 
-        # if "SwingHigh" in df.columns:
+        if "SwingHigh" in df.columns:
 
-        #     swing_high = df[df["SwingHigh"]]
+            swing_high = df[df["SwingHigh"]]
 
-        #     if not swing_high.empty:
+            if not swing_high.empty:
 
-        #         fig.add_trace(
+                fig.add_trace(
 
-        #             go.Scatter(
+                    go.Scatter(
 
-        #                 x=swing_high.index,
+                        x=swing_high.index,
 
-        #                 y=swing_high["High"],
+                        y=swing_high["High"],
 
-        #                 mode="markers",
+                        mode="markers",
 
-        #                 name="Swing High",
+                        name="Swing High",
 
-        #                 marker=dict(
+                        marker=dict(
 
-        #                     symbol="triangle-down",
+                            symbol="triangle-down",
 
-        #                     size=10,
+                            size=10,
 
-        #                     color="red",
+                            color="red",
 
-        #                 ),
+                        ),
 
-        #             )
+                    )
 
-        #         )
+                )
 
-        # # --------------------------------------------------
-        # # Swing Low
-        # # --------------------------------------------------
+        # --------------------------------------------------
+        # Swing Low
+        # --------------------------------------------------
 
-        # if "SwingLow" in df.columns:
+        if "SwingLow" in df.columns:
 
-        #     swing_low = df[df["SwingLow"]]
+            swing_low = df[df["SwingLow"]]
 
-        #     if not swing_low.empty:
+            if not swing_low.empty:
 
-        #         fig.add_trace(
+                fig.add_trace(
 
-        #             go.Scatter(
+                    go.Scatter(
 
-        #                 x=swing_low.index,
+                        x=swing_low.index,
 
-        #                 y=swing_low["Low"],
+                        y=swing_low["Low"],
 
-        #                 mode="markers",
+                        mode="markers",
 
-        #                 name="Swing Low",
+                        name="Swing Low",
 
-        #                 marker=dict(
+                        marker=dict(
 
-        #                     symbol="triangle-up",
+                            symbol="triangle-up",
 
-        #                     size=10,
+                            size=10,
 
-        #                     color="green",
+                            color="green",
 
-        #                 ),
+                        ),
 
-        #             )
+                    )
 
-        #         )
+                )
 
         # --------------------------------------------------
         # Remove non-trading gaps

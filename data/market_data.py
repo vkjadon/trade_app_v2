@@ -298,3 +298,18 @@ class MarketData:
         )
 
         return data[quote_symbol]
+    
+    def get_option_data_by_token(
+        self,
+        instrument_token,
+        interval="5minute",
+        trading_date=None,
+        lookback_days=5,
+    ):
+
+        return self.get_history_by_token(
+            instrument_token=instrument_token,
+            interval=interval,
+            trading_date=trading_date,
+            lookback_days=lookback_days,
+        )

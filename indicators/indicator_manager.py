@@ -7,7 +7,6 @@ from indicators import (
     volume,
 )
 
-
 class IndicatorManager:
 
     def calculate(
@@ -49,5 +48,24 @@ class IndicatorManager:
         # It will be used later for stop loss.
 
         df = atr.calculate(df)
+        
+        # ---------------------------------------
+        # Smart ORB : Option Volume
+        # ---------------------------------------
 
+        if "CE_Volume" in df.columns:
+
+            df["CE_Volume_SMA20"] = (
+                df["CE_Volume"]
+                .rolling(window=20, min_periods=1)
+                .mean()
+            )
+
+        if "PE_Volume" in df.columns:
+
+            df["PE_Volume_SMA20"] = (
+                df["PE_Volume"]
+                .rolling(window=20, min_periods=1)
+                .mean()
+            )
         return df
