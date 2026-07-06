@@ -1,5 +1,5 @@
 from widgets.market_widget import MarketWidget
-from widgets.indicator_widget import IndicatorWidget
+from widgets.strategy_widget import StrategyWidget
 
 
 class Sidebar:
@@ -8,12 +8,12 @@ class Sidebar:
 
         market = MarketWidget().render()
 
-        indicators = IndicatorWidget().render()
+        strategy = StrategyWidget().render()
 
         return {
 
             **market,
 
-            "settings": indicators,
+            "settings": strategy,
 
         }

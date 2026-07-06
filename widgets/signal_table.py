@@ -14,10 +14,9 @@ class SignalTable:
 
         st.subheader("📢 Signals")
 
-        st.data_editor(
+        st.dataframe(
             signals,
             hide_index=True,
-            disabled=True,
             use_container_width=True,
             column_config={
                 "Close": st.column_config.NumberColumn(

@@ -1,5 +1,4 @@
 import streamlit as st
-
 from datetime import date, timedelta
 
 
@@ -7,80 +6,42 @@ class MarketWidget:
 
     def render(self):
 
-        st.sidebar.header("Market")
-
-        symbol = st.sidebar.selectbox(
-
-            "Index",
-
-            [
-
-                "NIFTY",
-
-                "BANKNIFTY",
-
-                "FINNIFTY",
-
-                "MIDCPNIFTY",
-
-            ],
-
-        )
-
         today = date.today()
 
         if today.weekday() == 5:
-
             today -= timedelta(days=1)
-
         elif today.weekday() == 6:
-
             today -= timedelta(days=2)
 
-        trading_date = st.sidebar.date_input(
+        # -----------------------------
+        # Symbol & Interval
+        # -----------------------------
 
-            "Trading Date",
+        symbol = st.sidebar.selectbox("",["NIFTY","BANKNIFTY","FINNIFTY","MIDCPNIFTY",],label_visibility="collapsed", )
 
-            value=today,
+        # -----------------------------
+        # Trading Date
+        # -----------------------------
+        c1, c2 = st.sidebar.columns([2, 1])
 
-            max_value=today,
+        trading_date = c1.date_input("", value=today,max_value=today,label_visibility="collapsed",)
 
-        )
-
-        interval = st.sidebar.selectbox(
-
-            "Interval",
-
-            [
-
-                "5minute",
-
-                "15minute",
-
-            ],
-
-        )
+        interval = c2.selectbox("",["5minute","15minute",],label_visibility="collapsed",)
+        
+        # -----------------------------
+        # Lookback
+        # -----------------------------
 
         lookback = st.sidebar.slider(
-
-            "Lookback Days",
-
+            "Lookback",
             min_value=5,
-
             max_value=60,
-
             value=10,
-
         )
 
         return {
-
             "symbol": symbol,
-
             "interval": interval,
-
             "trading_date": trading_date,
-
             "lookback_days": lookback,
-
         }

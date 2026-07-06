@@ -1,6 +1,9 @@
 import streamlit as st
 
 from widgets.sidebar import Sidebar
+from widgets.strategy_widget import StrategyWidget
+from widgets.market_widget import MarketWidget
+
 from widgets.replay_panel import ReplayPanel
 from widgets.signal_table import SignalTable
 from widgets.trade_book import TradeBook
@@ -14,6 +17,7 @@ from core.application import TradingApplication
 from strategy.trading_strategy import TradingStrategy
 from engine.trade_engine import TradeEngine
 
+from backtest.backtest_engine import BacktestEngine
 
 # --------------------------------------------------------
 # Page
@@ -31,12 +35,16 @@ st.title("📈 Trade App V2")
 # Sidebar
 # --------------------------------------------------------
 
-sidebar = Sidebar()
-config = sidebar.render()
+market = MarketWidget().render()
 
-settings = config["settings"]
+settings = StrategyWidget().render()
 
+backtest = st.sidebar.button("📊 Backtest",use_container_width=True,)
 
+config = {
+    **market,
+    "settings": settings,
+}
 # --------------------------------------------------------
 # Load Data
 # --------------------------------------------------------
@@ -47,15 +55,55 @@ result = app.run(config)
 
 df = result["data"]
 
+# --------------------------------------------------------
+# Backtest
+# --------------------------------------------------------
 
+if backtest:
+
+    st.subheader("📊 Backtest")
+
+    bt = BacktestEngine().run(config)
+
+    if bt.empty:
+
+        st.warning("No trades generated.")
+
+    else:
+
+        c1, c2, c3, c4 = st.columns(4)
+
+        c1.metric("Days", len(bt))
+        c2.metric("Trades", bt["Trades"].sum())
+        c3.metric("Points", round(bt["Points"].sum(), 2))
+        c4.metric("Win %", round(100 * bt["Wins"].sum() /
+                                 max(1, bt["Trades"].sum()), 1))
+
+        st.dataframe(
+            bt,
+            use_container_width=True,
+            hide_index=True,
+        )
+
+        st.line_chart(
+            bt.set_index("Date")["Cum Points"]
+        )
+
+    st.stop()
+    
 # --------------------------------------------------------
 # Replay
 # --------------------------------------------------------
 
-step = ReplayPanel().render(len(df))
+# st.write("Rows before replay:", len(df))
+
+step = ReplayPanel().render(len(df), config["trading_date"])
+
+# st.write("Step:", step)
 
 df = df.iloc[:step].copy()
 
+# st.write("Rows after replay:", len(df))
 
 # --------------------------------------------------------
 # Strategy
@@ -90,15 +138,10 @@ price_chart = CandlestickChart().create(
 rsi_chart = None
 macd_chart = None
 
-if settings["rsi"]:
-    rsi_chart = RSIChart().create(df)
-
-if settings["macd"]:
-    macd_chart = MACDChart().create(df)
+rsi_chart = RSIChart().create(df)
+macd_chart = MACDChart().create(df)
 
 ChartsPanel().render(price_chart)
-ChartsPanel().render(rsi_chart, macd_chart)
-
 
 # --------------------------------------------------------
 # Trade Book
@@ -114,3 +157,5 @@ TradeBook().render(trades)
 st.subheader("Signals")
 
 SignalTable().render(df)
+
+ChartsPanel().render(rsi_chart, macd_chart)
