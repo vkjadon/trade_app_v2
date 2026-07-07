@@ -27,25 +27,6 @@ class MarketDataService:
         )
 
     # --------------------------------------------------
-    # Option Data (Trading Symbol)
-    # --------------------------------------------------
-
-    def get_option_data(
-        self,
-        tradingsymbol,
-        interval="5minute",
-        trading_date=None,
-        lookback_days=10,
-    ):
-
-        return self.market.get_option_data(
-            tradingsymbol=tradingsymbol,
-            interval=interval,
-            trading_date=trading_date,
-            lookback_days=lookback_days,
-        )
-
-    # --------------------------------------------------
     # Option Data (Instrument Token)
     # --------------------------------------------------
 
@@ -85,3 +66,5 @@ class MarketDataService:
     ):
 
         return self.market.get_quote(symbol)
+    
+    

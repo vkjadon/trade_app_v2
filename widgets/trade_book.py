@@ -5,7 +5,7 @@ class TradeBook:
 
     def render(self, trades):
 
-        st.subheader("📒 Trade Book")
+        st.write("Trade Book")
 
         if trades.empty:
             st.info("No trades generated.")
@@ -25,7 +25,7 @@ class TradeBook:
         trades = trades.reset_index(drop=True)
 
         st.dataframe(
-            trades,
+            trades[["Entry Time", "Entry", "SL", "Target", "Exit", "Exit Time", "Points", "Running P/L"]],
             use_container_width=True,
             hide_index=True,
         )

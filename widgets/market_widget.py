@@ -17,7 +17,7 @@ class MarketWidget:
         # Symbol & Interval
         # -----------------------------
 
-        symbol = st.sidebar.selectbox("",["NIFTY","BANKNIFTY","FINNIFTY","MIDCPNIFTY",],label_visibility="collapsed", )
+        symbol = st.sidebar.selectbox("",["NIFTY","BANKNIFTY","NIFTYIT","SENSEX",],label_visibility="collapsed", )
 
         # -----------------------------
         # Trading Date

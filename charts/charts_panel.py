@@ -3,9 +3,7 @@ import streamlit as st
 
 class ChartsPanel:
 
-    def render(
-        self,
-        price_chart,
+    def render(self, price_chart,
         rsi_chart=None,
         macd_chart=None,
     ):

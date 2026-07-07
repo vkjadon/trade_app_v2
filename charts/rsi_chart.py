@@ -29,7 +29,7 @@ class RSIChart:
 
         fig.update_layout(
 
-            height=220,
+            height=120,
 
             template="plotly_white",
 

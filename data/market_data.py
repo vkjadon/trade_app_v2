@@ -34,26 +34,6 @@ class MarketData:
         )
 
     # --------------------------------------------------
-    # Keep only selected trading day
-    # --------------------------------------------------
-
-    def filter_trading_day(
-        self,
-        df,
-        trading_date,
-    ):
-
-        if trading_date is None:
-
-            return df
-
-        trading_date = pd.Timestamp(trading_date).date()
-
-        return df[
-            df.index.date == trading_date
-        ]
-
-    # --------------------------------------------------
     # Historical Data
     # --------------------------------------------------
 
@@ -140,6 +120,8 @@ class MarketData:
                 "volume": "Volume",
 
                 "oi": "OI",
+                
+                "strike": "strike",
 
             },
 
@@ -210,46 +192,6 @@ class MarketData:
     # --------------------------------------------------
     # Option Data
     # --------------------------------------------------
-
-    def get_option_data(
-
-        self,
-
-        tradingsymbol,
-
-        interval="5minute",
-
-        trading_date=None,
-
-        lookback_days=5,
-
-    ):
-
-        token = self.instrument_manager.get_token(
-
-            tradingsymbol
-
-        )
-
-        if token is None:
-
-            raise ValueError(
-
-                f"Instrument not found : {tradingsymbol}"
-
-            )
-
-        return self.get_history_by_token(
-
-            instrument_token=token,
-
-            interval=interval,
-
-            trading_date=trading_date,
-
-            lookback_days=lookback_days,
-
-        )
 
     # --------------------------------------------------
     # LTP

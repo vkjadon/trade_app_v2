@@ -189,31 +189,27 @@ class CandlestickChart:
 
             )
 
-        # --------------------------------------------------
-        # Swing High
-        # --------------------------------------------------
+        if "Signal" in df.columns:
 
-        if "SwingHigh" in df.columns:
+            swing_low = df[df["Signal"] == "BUY PE"]
 
-            swing_high = df[df["SwingHigh"]]
-
-            if not swing_high.empty:
+            if not swing_low.empty:
 
                 fig.add_trace(
 
                     go.Scatter(
 
-                        x=swing_high.index,
+                        x=swing_low.index,
 
-                        y=swing_high["High"],
+                        y = df.loc[swing_low.index, "High"] + 5,
 
                         mode="markers",
 
-                        name="Swing High",
+                        name="Signal: PE",
 
                         marker=dict(
 
-                            symbol="triangle-down",
+                            symbol="circle",
 
                             size=10,
 
@@ -225,13 +221,9 @@ class CandlestickChart:
 
                 )
 
-        # --------------------------------------------------
-        # Swing Low
-        # --------------------------------------------------
+        if "Signal" in df.columns:
 
-        if "SwingLow" in df.columns:
-
-            swing_low = df[df["SwingLow"]]
+            swing_low = df[df["Signal"] == "BUY CE"]
 
             if not swing_low.empty:
 
@@ -241,15 +233,15 @@ class CandlestickChart:
 
                         x=swing_low.index,
 
-                        y=swing_low["Low"],
+                        y = df.loc[swing_low.index, "Low"] - 5,
 
                         mode="markers",
 
-                        name="Swing Low",
+                        name="Signal: CE",
 
                         marker=dict(
 
-                            symbol="triangle-up",
+                            symbol="circle",
 
                             size=10,
 
@@ -291,7 +283,7 @@ class CandlestickChart:
 
             title="Price",
 
-            height=650,
+            height=450,
 
             template="plotly_white",
 

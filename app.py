@@ -1,6 +1,7 @@
 import streamlit as st
 
-from widgets.sidebar import Sidebar
+from styles.theme import compact_card, market_snapshot, option_snapshot
+
 from widgets.strategy_widget import StrategyWidget
 from widgets.market_widget import MarketWidget
 from widgets.option_data_widget import OptionDataWidget
@@ -29,8 +30,6 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("📈 Trade App V2")
-
 # --------------------------------------------------------
 # Sidebar
 # --------------------------------------------------------
@@ -45,6 +44,16 @@ config = {
     **market,
     "settings": settings,
 }
+
+st.markdown(
+    f"""
+    <h4 style='margin:0;padding:0;color:#FF4B4B;'>
+        {config["symbol"]} | {config["trading_date"]:%d-%b-%Y} | {config["interval"]}
+    </h4>
+    """,
+    unsafe_allow_html=True,
+)
+
 # --------------------------------------------------------
 # Load Data
 # --------------------------------------------------------
@@ -53,6 +62,10 @@ app = TradingApplication()
 
 result = app.run(config)
 
+if result is None:
+    st.info("No market data available for the selected date.")
+    st.stop()
+    
 df = result["data"]
 
 # --------------------------------------------------------
@@ -139,32 +152,40 @@ trades = trade_engine.generate(df)
 # Charts
 # --------------------------------------------------------
 
-price_chart = CandlestickChart().create(
-    df,
-    trades,
-)
+price_chart = CandlestickChart().create(df,trades,)
 
 rsi_chart = None
 macd_chart = None
 
 rsi_chart = RSIChart().create(df)
 macd_chart = MACDChart().create(df)
+    
+left, right = st.columns([3, 1], gap="small")
 
-ChartsPanel().render(price_chart)
+with left:
+    ChartsPanel().render(price_chart)
+    TradeBook().render(trades)
+    
+with right:
 
-# --------------------------------------------------------
-# Trade Book
-# --------------------------------------------------------
+    st.write("Market Snapshot")
+    last = df.iloc[-1]
+    market_snapshot(last)
 
-TradeBook().render(trades)
+    if result["ce_df"] is not None:
 
+        # ce = result["ce_df"].iloc[-1]
+        # pe = result["pe_df"].iloc[-1]
 
-# --------------------------------------------------------
-# Signal Table
-# --------------------------------------------------------
+        current_time = df.index[-1]
+        # ce = ce_df.loc[current_time]
+        # pe = pe_df.loc[current_time]
+        ce = result["ce_df"].loc[current_time]
+        pe = result["pe_df"].loc[current_time]
 
-st.subheader("Signals")
+        option_snapshot(ce, pe)
+            
+    ChartsPanel().render(rsi_chart, macd_chart)
 
 SignalTable().render(df)
 
-ChartsPanel().render(rsi_chart, macd_chart)

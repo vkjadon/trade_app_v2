@@ -4,6 +4,29 @@ Professional Intraday Trading Platform using Zerodha Kite API
 
 ---
 
+# Daily Startup
+
+## Step 1
+
+Generate Zerodha Access Token
+
+```
+uv run python auth/login.py
+```
+
+Complete login in browser. The access token is stored.
+
+---
+
+## Step 2
+
+Start Streamlit
+
+```
+uv run streamlit run app.py
+```
+---
+
 # Features
 
 - Historical Market Data
@@ -88,40 +111,6 @@ trade_app_v2/
 
     models/
         trade.py
-
----
-
-# Daily Startup
-
-## Step 1
-
-Activate Environment
-
-uv sync
-
-or
-
-source .venv/bin/activate
-
----
-
-## Step 2
-
-Generate Zerodha Access Token
-
-uv run python auth/login.py
-
-Complete login in browser.
-
-The access token is stored.
-
----
-
-## Step 3
-
-Start Streamlit
-
-uv run streamlit run app.py
 
 ---
 

@@ -22,6 +22,10 @@ SPOT_INDICES = {
         "exchange": "NSE",
         "tradingsymbol": "NIFTY MID SELECT",
     },
+    "NIFTYIT": {
+        "exchange": "NSE",
+        "tradingsymbol": "NIFTY IT",
+    },
     "SENSEX": {
         "exchange": "BSE",
         "tradingsymbol": "SENSEX",

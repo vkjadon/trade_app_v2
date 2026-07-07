@@ -16,6 +16,8 @@ class MACDChart:
                 y=df["MACD_12_26_9"],
 
                 name="MACD",
+                
+                showlegend=False,
 
             )
 
@@ -30,6 +32,9 @@ class MACDChart:
                 y=df["MACDs_12_26_9"],
 
                 name="Signal",
+                
+                showlegend=False,
+                
 
             )
 
@@ -37,7 +42,7 @@ class MACDChart:
 
         fig.update_layout(
 
-            height=220,
+            height=120,
 
             template="plotly_white",
 

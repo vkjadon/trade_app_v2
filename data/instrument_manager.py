@@ -72,23 +72,6 @@ class InstrumentManager:
         return self.download()
 
     # --------------------------------------------------
-    # Search
-    # --------------------------------------------------
-
-    def search(self, text):
-
-        df = self.load()
-
-        return df[
-            df["tradingsymbol"]
-            .str.contains(
-                text,
-                case=False,
-                na=False
-            )
-        ]
-
-    # --------------------------------------------------
     # Available Exchanges
     # --------------------------------------------------
 
@@ -168,32 +151,6 @@ class InstrumentManager:
         )
 
         return strikes
-
-    # --------------------------------------------------
-    # Option Chain
-    # --------------------------------------------------
-
-    def get_option_chain(
-        self,
-        index_name,
-        expiry,
-    ):
-
-        df = self.load()
-
-        option_df = df[
-            (df["name"] == index_name)
-            &
-            (df["segment"] == "NFO-OPT")
-            &
-            (df["expiry"] == expiry)
-        ]
-
-        option_df = option_df.sort_values(
-            "strike"
-        )
-
-        return option_df
 
     # --------------------------------------------------
     # Instrument Token
@@ -332,17 +289,3 @@ class InstrumentManager:
             return None
 
         return row.iloc[0]
-
-
-if __name__ == "__main__":
-
-    im = InstrumentManager()
-
-    option = im.get_atm_option(
-        "NIFTY",
-        25243,
-        "CE",
-    )
-
-    print(option["tradingsymbol"])
-    print(option["instrument_token"])

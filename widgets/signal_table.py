@@ -12,8 +12,10 @@ class SignalTable:
             st.info("No signals generated.")
             return
 
-        st.subheader("📢 Signals")
-
+        st.markdown(f"""<h4 style='margin:0;padding:0;color:#FF4B4B;'>
+                    Signals
+                    </h4>""", unsafe_allow_html=True,)
+        
         st.dataframe(
             signals,
             hide_index=True,

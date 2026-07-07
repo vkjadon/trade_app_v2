@@ -103,24 +103,12 @@ class TradingStrategy:
             # BUY Signals
             # ----------------------------------
 
-            if (
-                ce_trend
-                and ce_momentum
-                and ce_macd
-                and ce_breakout
-                and ce_candle
-            ):
+            if (ce_trend and ce_momentum and ce_macd and ce_breakout and ce_candle):
 
                 signal = "BUY CE"
                 reasons = ["All Conditions Satisfied"]
 
-            elif (
-                pe_trend
-                and pe_momentum
-                and pe_macd
-                and pe_breakout
-                and pe_candle
-            ):
+            elif (pe_trend and pe_momentum and pe_macd and pe_breakout and pe_candle):
 
                 signal = "BUY PE"
                 reasons = ["All Conditions Satisfied"]
@@ -237,9 +225,6 @@ class TradingStrategy:
             # ----------------------------------
             # VWAP
             # ----------------------------------
-
-            # ce_vwap = current["Close"] > current["VWAP"]
-            # pe_vwap = current["Close"] < current["VWAP"]
             
             ce_vwap_ok = (current["CE_Close"] > current["CE_VWAP"])
             pe_vwap_ok = (current["PE_Close"] > current["PE_VWAP"])
@@ -281,7 +266,7 @@ class TradingStrategy:
                 and ce_macd
                 and ce_breakout
                 and ce_candle
-                # and ce_volume_ok
+                and ce_volume_ok
                 and ce_vwap_ok
             ):
 
@@ -294,7 +279,7 @@ class TradingStrategy:
                 and pe_macd
                 and pe_breakout
                 and pe_candle
-                # and pe_volume_ok
+                and pe_volume_ok
                 and pe_vwap_ok
             ):
 
@@ -320,8 +305,8 @@ class TradingStrategy:
                 if not (ce_candle or pe_candle):
                     reasons.append("❌ Strong Candle")
  
-                # if not (ce_volume_ok or pe_volume_ok):
-                #     reasons.append("❌ Volume")
+                if not (ce_volume_ok or pe_volume_ok):
+                    reasons.append("❌ Volume")
     
                 if not (ce_vwap_ok or pe_vwap_ok):
                     reasons.append("❌ VWAP")
