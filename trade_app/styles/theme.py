@@ -175,7 +175,7 @@ def option_snapshot(ce, pe):
                 <td align="right" style="color:#A0A0A0;">PE</td>
             </tr>
             <tr>
-                <td style="color:#A0A0A0;">Close</td>
+                <td style="color:#A0A0A0;">Price</td>
                 <td align="right"><b>{ce["Close"]:.2f}</b></td>
                 <td align="right"><b>{pe["Close"]:.2f}</b></td>
             </tr>

@@ -2,10 +2,7 @@ from datetime import datetime, timedelta, time
 
 import pandas as pd
 
-from config.market import (
-    MARKET_OPEN,
-    MARKET_CLOSE,
-)
+from config.market import MARKET_OPEN, MARKET_CLOSE
 
 from data.kite_client import get_kite
 from data.instrument_manager import InstrumentManager
